@@ -150,7 +150,11 @@ async function loadStudent() {
     await supabaseClient.auth.getUser();
 
   if (userError || !user) {
-    window.location.href = "login.html";
+    if (userError || !user) {
+    status.innerText = "SESSION ERROR: " +
+        (userError?.message || "No logged-in user found");
+    return;
+    }
     return;
   }
 
