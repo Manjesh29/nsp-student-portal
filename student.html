@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Dashboard | NSP</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f7fb;
+      color: #07366d;
+    }
+
+    header {
+      background: #07366d;
+      color: white;
+      text-align: center;
+      padding: 25px 15px;
+      border-bottom: 5px solid #f5ad00;
+    }
+
+    header h1 {
+      margin: 0;
+    }
+
+    .container {
+      max-width: 700px;
+      margin: 30px auto;
+      padding: 20px;
+    }
+
+    .card {
+      background: white;
+      padding: 25px;
+      border-radius: 16px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+
+    .card h2 {
+      margin-top: 0;
+    }
+
+    .row {
+      padding: 12px 0;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .label {
+      font-weight: bold;
+    }
+
+    #status {
+      text-align: center;
+      padding: 20px;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 10px;
+      background: #f5ad00;
+      color: #07366d;
+      font-size: 17px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <h1>🎓 NSP Student Portal</h1>
+  <p>Navodaya Success Point</p>
+</header>
+
+<div class="container">
+
+  <div id="status">Loading student details...</div>
+
+  <div class="card" id="profileCard" style="display:none;">
+    <h2>👤 Student Profile</h2>
+
+    <div class="row">
+      <span class="label">Student ID:</span>
+      <span id="studentId"></span>
+    </div>
+
+    <div class="row">
+      <span class="label">Name:</span>
+      <span id="studentName"></span>
+    </div>
+
+    <div class="row">
+      <span class="label">Class:</span>
+      <span id="studentClass"></span>
+    </div>
+
+    <div class="row">
+      <span class="label">School:</span>
+      <span id="schoolName"></span>
+    </div>
+
+    <div class="row">
+      <span class="label">District:</span>
+      <span id="district"></span>
+    </div>
+
+    <div class="row">
+      <span class="label">State:</span>
+      <span id="state"></span>
+    </div>
+
+    <div class="row">
+      <span class="label">Status:</span>
+      <span id="studentStatus"></span>
+    </div>
+  </div>
+
+  <button id="logoutButton" style="display:none;">
+    Logout
+  </button>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+const SUPABASE_URL = "https://eifjroanwsroaxrlupym.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_grY-Dece7_RS5CLwzAZZ_A_icnSUMIj";
+
+const supabaseClient = supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_PUBLISHABLE_KEY
+);
+
+async function loadStudent() {
+
+  const status = document.getElementById("status");
+
+  const { data: { user }, error: userError } =
+    await supabaseClient.auth.getUser();
+
+  if (userError || !user) {
+    window.location.href = "login.html";
+    return;
+  }
+
+  const { data: student, error } =
+    await supabaseClient
+      .from("students")
+      .select("*")
+      .eq("auth_user_id", user.id)
+      .single();
+
+  if (error || !student) {
+    status.innerText = "Student profile not found.";
+    return;
+  }
+
+  document.getElementById("studentId").innerText =
+    student.nsp_id || "-";
+
+  document.getElementById("studentName").innerText =
+    student.student_name || "-";
+
+  document.getElementById("studentClass").innerText =
+    student.class || "-";
+
+  document.getElementById("schoolName").innerText =
+    student.school_name || "-";
+
+  document.getElementById("district").innerText =
+    student.district || "-";
+
+  document.getElementById("state").innerText =
+    student.state || "-";
+
+  document.getElementById("studentStatus").innerText =
+    student.student_status || "-";
+
+  status.style.display = "none";
+  document.getElementById("profileCard").style.display = "block";
+  document.getElementById("logoutButton").style.display = "block";
+}
+
+document
+  .getElementById("logoutButton")
+  .addEventListener("click", async function() {
+
+    await supabaseClient.auth.signOut();
+    window.location.href = "login.html";
+
+  });
+
+loadStudent();
+</script>
+
+</body>
+</html>
