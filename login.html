@@ -243,11 +243,15 @@ loginForm.addEventListener("submit", async function(event) {
     }
 
     message.style.color = "green";
-    message.textContent = "Login successful!";
+message.textContent = "Login successful!";
 
-    setTimeout(function() {
-      window.location.href = "student.html";
-    }, 700);
+const { data: sessionData } = await supabaseClient.auth.getSession();
+
+if (sessionData.session) {
+    window.location.href = "./student.html";
+} else {
+    throw new Error("Login session was not created.");
+}
 
   } catch (error) {
     message.style.color = "#c62828";
