@@ -308,6 +308,16 @@
   <br><br>
   © 2026 Navodaya Success Point. All Rights Reserved.
 </footer>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+<script>
+  const SUPABASE_URL = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
+  const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_grY-Dece7_RS5CLwzAZZ_A_icnSUMIj";
+
+  const supabaseClient = supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_PUBLISHABLE_KEY
+  );
+</script>
 </body>
 </html>
