@@ -198,7 +198,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
-const SUPABASE_URL = "https://eifjroamwsroaxrlupym.supabase.co";
+const SUPABASE_URL = "https://eifjroamwsroaxrlupyn.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_grY-Dece7_RS5CLwzAZZ_A_icnSUMIj";
 
 const supabaseClient = supabase.createClient(
@@ -238,36 +238,35 @@ loginForm.addEventListener("submit", async function(event) {
   message.style.color = "#07366d";
   message.textContent = "Checking login...";
 
-    try {
-  const { data, error } =
-    await supabaseClient.auth.signInWithPassword({
-      email: email,
-      password: password
-    });
+  try {
+    const { data, error } =
+      await supabaseClient.auth.signInWithPassword({
+        email: email,
+        password: password
+      });
 
-  if (error) {
-    throw error;
-  }
-
-  if (!data || !data.session) {
-    throw new Error("LOGIN OK BUT SESSION NOT CREATED");
-  }
-
-  message.style.color = "green";
-  message.textContent = "Login successful! Opening dashboard...";
-
-  setTimeout(() => {
-    window.location.href = "./student.html";
-  }, 1000);
-
-} catch (error) {
-  message.style.color = "#c62828";
-  message.textContent =
-    error.message || "Invalid email or password.";
-  loginButton.disabled = false;
+    if (error) {
+      throw error;
     }
 
-  } 
+    if (!data || !data.session) {
+      throw new Error("Login successful but session was not created.");
+    }
+
+    message.style.color = "green";
+    message.textContent = "Login successful! Opening dashboard...";
+
+    window.location.href = "./student.html";
+
+  } catch (error) {
+    console.error(error);
+
+    message.style.color = "#c62828";
+    message.textContent =
+      error.message || "Invalid email or password.";
+
+    loginButton.disabled = false;
+  }
 });
 </script>
    
