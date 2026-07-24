@@ -154,15 +154,14 @@
 
       <form id="loginForm">
 
-        <label for="studentId">NSP Student ID</label>
-
+        <label for="studentId">Email Address</label>
         <input
-          type="text"
-          id="studentId"
-          placeholder="Enter your Student ID"
-          autocomplete="username"
-          required
-        >
+  type="email"
+  id="studentId"
+  placeholder="Enter your email"
+  autocomplete="email"
+  required
+>
 
         <label for="password">Password</label>
 
@@ -196,44 +195,68 @@
 
   </main>
 
-  <script>
-    const loginForm = document.getElementById("loginForm");
-    const message = document.getElementById("message");
-    const loginButton = document.getElementById("loginButton");
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    loginForm.addEventListener("submit", function(event) {
-      event.preventDefault();
+<script>
+const SUPABASE_URL = "https://eifjroamwsroaxrlupym.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_grY-Dece7_RS5CLwzAZZ_A_icnSUMIj";
 
-      const studentId =
-        document.getElementById("studentId").value.trim();
+const supabaseClient = supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_PUBLISHABLE_KEY
+);
 
-      const password =
-        document.getElementById("password").value;
+const loginForm = document.getElementById("loginForm");
+const message = document.getElementById("message");
+const loginButton = document.getElementById("loginButton");
 
-      if (!studentId || !password) {
-        message.style.color = "#c62828";
-        message.textContent =
-          "Please enter Student ID and password.";
-        return;
-      }
+loginForm.addEventListener("submit", async function(event) {
+  event.preventDefault();
 
-      message.style.color = "#07366d";
-      message.textContent = "Checking login...";
-      loginButton.disabled = true;
+  const email = document
+    .getElementById("studentId")
+    .value.trim();
 
-      /*
-        NEXT STEP:
-        Yahin Supabase authentication connect karenge.
-      */
+  const password = document
+    .getElementById("password")
+    .value;
 
-      setTimeout(function() {
-        message.style.color = "#c62828";
-        message.textContent =
-          "Student authentication setup is in progress.";
-        loginButton.disabled = false;
-      }, 700);
-    });
-  </script>
+  if (!email || !password) {
+    message.style.color = "#c62828";
+    message.textContent = "Please enter email and password.";
+    return;
+  }
+
+  loginButton.disabled = true;
+  message.style.color = "#07366d";
+  message.textContent = "Checking login...";
+
+  try {
+    const { data, error } =
+      await supabaseClient.auth.signInWithPassword({
+        email: email,
+        password: password
+      });
+
+    if (error) {
+      throw error;
+    }
+
+    message.style.color = "green";
+    message.textContent = "Login successful!";
+
+    setTimeout(function() {
+      window.location.href = "student.html";
+    }, 700);
+
+  } catch (error) {
+    message.style.color = "#c62828";
+    message.textContent = "Invalid email or password.";
+    loginButton.disabled = false;
+  }
+});
+</script>
+   
 
 </body>
 </html>
