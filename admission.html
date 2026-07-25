@@ -123,11 +123,10 @@
       font-size: 14px;
     }
 
-    #submitButton {
+    #submitButton,
+    #createLoginButton {
       width: 100%;
       border: none;
-      background: #f4ad16;
-      color: #062b5d;
       padding: 15px;
       border-radius: 10px;
       font-size: 17px;
@@ -136,7 +135,18 @@
       margin-top: 25px;
     }
 
-    #submitButton:disabled {
+    #submitButton {
+      background: #f4ad16;
+      color: #062b5d;
+    }
+
+    #createLoginButton {
+      background: #062b5d;
+      color: white;
+    }
+
+    #submitButton:disabled,
+    #createLoginButton:disabled {
       opacity: .6;
       cursor: not-allowed;
     }
@@ -159,6 +169,56 @@
     .error {
       background: #ffebee;
       color: #b71c1c;
+    }
+
+    /* CREATE LOGIN BOX */
+
+    #createLoginBox {
+      display: none;
+      margin-top: 22px;
+      padding: 20px;
+      background: #eef5ff;
+      border: 1px solid #cbdcf5;
+      border-radius: 14px;
+    }
+
+    #createLoginBox h3 {
+      color: #062b5d;
+      text-align: center;
+      margin-bottom: 8px;
+      font-size: 21px;
+    }
+
+    .login-subtitle {
+      text-align: center;
+      color: #555;
+      line-height: 1.5;
+      margin-bottom: 20px;
+    }
+
+    #loginEmail {
+      background: #f1f1f1;
+    }
+
+    #loginMessage {
+      display: none;
+      margin-top: 15px;
+      padding: 13px;
+      border-radius: 9px;
+      text-align: center;
+      line-height: 1.5;
+      font-weight: bold;
+    }
+
+    .login-link {
+      display: inline-block;
+      margin-top: 12px;
+      padding: 11px 18px;
+      background: #f4ad16;
+      color: #062b5d;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: bold;
     }
 
     .back {
@@ -295,17 +355,17 @@
           </label>
 
           <select id="class_name" required>
-  <option value="">Select Class</option>
-  <option value="3">Class 3</option>
-  <option value="4">Class 4</option>
-  <option value="5">Class 5</option>
-  <option value="6">Class 6</option>
-  <option value="7">Class 7</option>
-  <option value="8">Class 8</option>
-  <option value="9">Class 9</option>
-  <option value="10">Class 10</option>
-  <option value="11">Class 11</option>
-  <option value="12">Class 12</option>
+            <option value="">Select Class</option>
+            <option value="3">Class 3</option>
+            <option value="4">Class 4</option>
+            <option value="5">Class 5</option>
+            <option value="6">Class 6</option>
+            <option value="7">Class 7</option>
+            <option value="8">Class 8</option>
+            <option value="9">Class 9</option>
+            <option value="10">Class 10</option>
+            <option value="11">Class 11</option>
+            <option value="12">Class 12</option>
           </select>
         </div>
 
@@ -458,9 +518,8 @@
 
 
       <div class="note">
-        📌 Submitting this form creates an admission application.
-        Student portal login access will be provided after the
-        application is approved.
+        📌 Submit your admission application. After successful
+        submission, create your password for the NSP Student Portal.
       </div>
 
 
@@ -475,7 +534,67 @@
 
     </form>
 
+
+    <!-- CREATE STUDENT LOGIN -->
+
+    <div id="createLoginBox">
+
+      <h3>🔐 Create Student Login</h3>
+
+      <p class="login-subtitle">
+        Admission successful! Now create your password
+        to access the NSP Student Portal.
+      </p>
+
+      <label>Email Address</label>
+
+      <input
+        type="email"
+        id="loginEmail"
+        readonly
+      >
+
+      <br><br>
+
+      <label>
+        Create Password <span class="required">*</span>
+      </label>
+
+      <input
+        type="password"
+        id="loginPassword"
+        placeholder="Minimum 6 characters"
+        minlength="6"
+        autocomplete="new-password"
+      >
+
+      <br><br>
+
+      <label>
+        Confirm Password <span class="required">*</span>
+      </label>
+
+      <input
+        type="password"
+        id="confirmLoginPassword"
+        placeholder="Enter password again"
+        minlength="6"
+        autocomplete="new-password"
+      >
+
+      <button
+        type="button"
+        id="createLoginButton"
+      >
+        🔐 Create Login Password
+      </button>
+
+      <div id="loginMessage"></div>
+
+    </div>
+
   </div>
+
 
   <a href="index.html" class="back">
     ← Back to Home
@@ -510,6 +629,24 @@ const submitButton =
 const message =
   document.getElementById("message");
 
+const createLoginBox =
+  document.getElementById("createLoginBox");
+
+const loginEmail =
+  document.getElementById("loginEmail");
+
+const loginPassword =
+  document.getElementById("loginPassword");
+
+const confirmLoginPassword =
+  document.getElementById("confirmLoginPassword");
+
+const createLoginButton =
+  document.getElementById("createLoginButton");
+
+const loginMessage =
+  document.getElementById("loginMessage");
+
 
 function getValue(id) {
   return document.getElementById(id).value.trim();
@@ -532,6 +669,10 @@ function generateApplicationNumber() {
 }
 
 
+/* =========================
+   ADMISSION SUBMIT
+========================= */
+
 admissionForm.addEventListener(
   "submit",
   async function(event) {
@@ -539,6 +680,7 @@ admissionForm.addEventListener(
     event.preventDefault();
 
     message.style.display = "none";
+    createLoginBox.style.display = "none";
 
 
     const mobile =
@@ -549,6 +691,9 @@ admissionForm.addEventListener(
 
     const pincode =
       getValue("pincode");
+
+    const admissionEmail =
+      getValue("email").toLowerCase();
 
 
     if (!/^[0-9]{10}$/.test(mobile)) {
@@ -618,7 +763,7 @@ admissionForm.addEventListener(
         getValue("category") || null,
 
       email:
-        getValue("email").toLowerCase(),
+        admissionEmail,
 
       mobile_number:
         mobile,
@@ -658,9 +803,7 @@ admissionForm.addEventListener(
 
     try {
 
-      const {
-        error
-      } =
+      const { error } =
         await supabaseClient
           .from("admissions")
           .insert([admissionData]);
@@ -678,21 +821,39 @@ admissionForm.addEventListener(
       message.innerHTML = `
         ✅ Application submitted successfully!
         <br><br>
+
         Your Application Number:
         <br>
+
         <strong>${applicationNumber}</strong>
+
         <br><br>
-        Please save this number for future reference.
+
+        Now create your Student Portal password below.
       `;
 
+
+      /* Keep email before resetting form */
+
+      loginEmail.value = admissionEmail;
 
       admissionForm.reset();
 
 
-      window.scrollTo({
-        top: document.body.scrollHeight,
-        behavior: "smooth"
-      });
+      /* Show create password section */
+
+      createLoginBox.style.display = "block";
+
+
+      setTimeout(function() {
+
+        createLoginBox.scrollIntoView({
+          behavior: "smooth",
+          block: "center"
+        });
+
+      }, 300);
+
 
     }
 
@@ -720,6 +881,158 @@ admissionForm.addEventListener(
 );
 
 
+/* =========================
+   CREATE LOGIN PASSWORD
+========================= */
+
+createLoginButton.addEventListener(
+  "click",
+  async function() {
+
+    const email =
+      loginEmail.value.trim().toLowerCase();
+
+    const password =
+      loginPassword.value;
+
+    const confirmPassword =
+      confirmLoginPassword.value;
+
+
+    loginMessage.style.display = "none";
+
+
+    if (!email) {
+
+      showLoginError(
+        "Please submit the admission application first."
+      );
+
+      return;
+    }
+
+
+    if (password.length < 6) {
+
+      showLoginError(
+        "Password must be at least 6 characters."
+      );
+
+      return;
+    }
+
+
+    if (password !== confirmPassword) {
+
+      showLoginError(
+        "Password and Confirm Password do not match."
+      );
+
+      return;
+    }
+
+
+    createLoginButton.disabled = true;
+
+    createLoginButton.innerText =
+      "Creating Student Login...";
+
+
+    try {
+
+      const {
+        data,
+        error
+      } =
+        await supabaseClient.auth.signUp({
+
+          email: email,
+
+          password: password
+
+        });
+
+
+      if (error) {
+        throw error;
+      }
+
+
+      loginMessage.style.display = "block";
+
+      loginMessage.style.background = "#e8f5e9";
+
+      loginMessage.style.color = "#1b5e20";
+
+      loginMessage.innerHTML = `
+        ✅ Student Login Created Successfully!
+
+        <br><br>
+
+        Your login email is:
+
+        <br>
+
+        <strong>${email}</strong>
+
+        <br><br>
+
+        Use this email and your password to login.
+
+        <br>
+
+        <a
+          href="login.html"
+          class="login-link"
+        >
+          🔐 Go to Student Login
+        </a>
+      `;
+
+
+      loginPassword.value = "";
+
+      confirmLoginPassword.value = "";
+
+      createLoginButton.style.display = "none";
+
+
+    }
+
+    catch (error) {
+
+      console.error(error);
+
+      showLoginError(
+        "Login could not be created. " +
+        error.message
+      );
+
+    }
+
+    finally {
+
+      if (
+        createLoginButton.style.display !== "none"
+      ) {
+
+        createLoginButton.disabled = false;
+
+        createLoginButton.innerText =
+          "🔐 Create Login Password";
+
+      }
+
+    }
+
+  }
+);
+
+
+/* =========================
+   ERROR FUNCTIONS
+========================= */
+
 function showError(text) {
 
   message.className = "error";
@@ -730,7 +1043,20 @@ function showError(text) {
 
 }
 
+
+function showLoginError(text) {
+
+  loginMessage.style.display = "block";
+
+  loginMessage.style.background = "#ffebee";
+
+  loginMessage.style.color = "#b71c1c";
+
+  loginMessage.innerText = text;
+
+}
+
 </script>
 
 </body>
-  </html>
+</html>
