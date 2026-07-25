@@ -286,7 +286,18 @@ async function loadStudent() {
   // fees.student_id points to students.id
   await loadFees(student.id);
 }
+// Show only the section requested from dashboard
+const section = window.location.hash;
 
+if (section === "#feesCard") {
+  document.getElementById("profileCard").style.display = "none";
+  document.getElementById("feesCard").style.display = "block";
+}
+
+if (section === "#profileCard") {
+  document.getElementById("profileCard").style.display = "block";
+  document.getElementById("feesCard").style.display = "none";
+}
 
 // LOAD FEES
 async function loadFees(studentDatabaseId) {
