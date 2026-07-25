@@ -371,7 +371,7 @@ async function loadStudent() {
 
     status.style.display = "none";
 
-    logoutButton.style.display = "block";
+    
     backButton.style.display = "block";
 
 
@@ -404,11 +404,11 @@ async function loadStudent() {
 
     if (pageSection === "#profileCard") {
 
-      profileCard.style.display = "block";
+  profileCard.style.display = "block";
+  feesCard.style.display = "none";
+  logoutButton.style.display = "block";
 
-      feesCard.style.display = "none";
-
-      return;
+  return;
     }
 
 
