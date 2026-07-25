@@ -311,13 +311,68 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
-  const SUPABASE_URL = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
-  const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_grY-Dece7_RS5CLwzAZZ_A_icnSUMIj";
+const SUPABASE_URL = "https://eifjroamwsroaxrlupym.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_grY-Dece7_RS5CLwzAZZ_A_icnSUMIj";
 
-  const supabaseClient = supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_PUBLISHABLE_KEY
-  );
+const supabaseClient = supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_PUBLISHABLE_KEY,
+  {
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+      detectSessionInUrl: true
+    }
+  }
+);
+
+async function checkLogin() {
+
+  const {
+    data: { session }
+  } = await supabaseClient.auth.getSession();
+
+  if (session) {
+    const loginBox = document.querySelector(".login-box");
+
+    loginBox.innerHTML = `
+      <h2>✅ Student Logged In</h2>
+      <p>
+        Welcome to your NSP Student Dashboard.
+        Use the services above to access your student account.
+      </p>
+
+      <br>
+
+      <a class="btn gold" href="student.html">
+        👤 My Profile & Fees
+      </a>
+
+      <button
+        onclick="logoutStudent()"
+        style="
+          background:#fff;
+          color:#062b5d;
+          border:none;
+          padding:13px 22px;
+          margin:5px;
+          border-radius:8px;
+          font-weight:bold;
+          cursor:pointer;
+        "
+      >
+        Logout
+      </button>
+    `;
+  }
+}
+
+async function logoutStudent() {
+  await supabaseClient.auth.signOut();
+  window.location.href = "index.html";
+}
+
+checkLogin();
 </script>
 </body>
 </html>
