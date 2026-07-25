@@ -376,45 +376,48 @@ async function loadStudent() {
 
 
 
-    /* ==================================
-       CHECK WHICH DASHBOARD CARD
-       WAS CLICKED
-       ================================== */
+    /* CHECK WHICH DASHBOARD CARD WAS CLICKED */
 
-    const pageSection =
-      window.location.hash;
+const pageSection = window.location.hash;
 
+/* Pehle sab hide */
+profileCard.style.display = "none";
+feesCard.style.display = "none";
+logoutButton.style.display = "none";
 
-    /* MONTHLY FEES CLICKED */
-
-    if (pageSection === "#feesCard") {
-
-      profileCard.style.display = "none";
-
-      feesCard.style.display = "block";
-
-      await loadFees(student.id);
-
-      return;
-    }
+backButton.style.display = "block";
 
 
+/* MONTHLY FEES */
 
-    /* MY PROFILE CLICKED */
+if (pageSection === "#feesCard") {
 
-    if (pageSection === "#profileCard") {
+  feesCard.style.display = "block";
+  logoutButton.style.display = "none";
+
+  await loadFees(student.id);
+
+  return;
+}
+
+
+/* MY PROFILE */
+
+if (pageSection === "#profileCard") {
 
   profileCard.style.display = "block";
   feesCard.style.display = "none";
   logoutButton.style.display = "block";
 
   return;
-    }
+}
 
 
+/* DIRECT student.html OPENED */
 
-    /* DIRECT student.html OPENED */
-
+profileCard.style.display = "block";
+feesCard.style.display = "none";
+logoutButton.style.display = "block";
     profileCard.style.display = "block";
 
     feesCard.style.display = "none";
