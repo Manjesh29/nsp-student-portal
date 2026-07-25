@@ -61,6 +61,34 @@
       padding: 20px;
     }
 
+    .fee-item {
+      background: #f8fafc;
+      border: 1px solid #e0e6ed;
+      border-radius: 12px;
+      padding: 15px;
+      margin-top: 15px;
+    }
+
+    .fee-item p {
+      margin: 8px 0;
+    }
+
+    .paid {
+      color: green;
+      font-weight: bold;
+    }
+
+    .unpaid {
+      color: #c62828;
+      font-weight: bold;
+    }
+
+    #feeMessage {
+      text-align: center;
+      color: #666;
+      padding: 15px 0;
+    }
+
     button {
       width: 100%;
       padding: 14px;
@@ -86,6 +114,7 @@
 
   <div id="status">Loading student details...</div>
 
+  <!-- STUDENT PROFILE -->
   <div class="card" id="profileCard" style="display:none;">
     <h2>👤 Student Profile</h2>
 
@@ -103,6 +132,308 @@
       <span class="label">Class:</span>
       <span id="studentClass"></span>
     </div>
+
+    <div class="row">
+      <span class="label">School:</span>
+      <span id="schoolName"></span>
+    </div>
+
+    <div class="row">
+      <span class="label">District:</span>
+      <span id="district"></span>
+    </div>
+
+    <div class="row">
+      <span class="label">State:</span>
+      <span id="state"></span>
+    </div>
+
+    <div class="row">
+      <span class="label">Status:</span>
+      <span id="studentStatus"></span>
+    </div>
+  </div>
+
+  <!-- FEES -->
+  <div class="card" id="feesCard" style="display:none;">
+    <h2>💰 My Fees</h2>
+
+    <div id="feeMessage">Loading fee details...</div>
+
+    <div id="feesList"></div>
+  </div>
+
+  <button id="logoutButton" style="display:none;">
+    Logout
+  </button>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+const SUPABASE_URL =
+  "https://eifjroamwsroaxrlupym.supabase.co";
+
+const SUPABASE_PUBLISHABLE_KEY =
+  "sb_publishable_grY-Dece7_RS5CLwzAZZ_A_icnSUMIj";
+
+const supabaseClient = supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_PUBLISHABLE_KEY,
+  {
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+      detectSessionInUrl: true
+    }
+  }
+);
+
+
+// LOAD STUDENT
+async function loadStudent() {
+
+  const status = document.getElementById("status");
+
+  const {
+    data: { user },
+    error: userError
+  } = await supabaseClient.auth.getUser();
+
+
+  if (userError || !user) {
+
+    status.innerText =
+      "SESSION ERROR: " +
+      (userError?.message || "No logged-in user found");
+
+    return;
+  }
+
+
+  const { data: student, error } =
+    await supabaseClient
+      .from("students")
+      .select("*")
+      .eq("auth_user_id", user.id)
+      .single();
+
+
+  if (error) {
+
+    status.innerText =
+      "DB ERROR: " +
+      error.message +
+      " | CODE: " +
+      error.code +
+      " | DETAILS: " +
+      (error.details || "-");
+
+    console.error(error);
+
+    return;
+  }
+
+
+  if (!student) {
+
+    status.innerText =
+      "NO STUDENT ROW FOUND FOR USER: " +
+      user.id;
+
+    return;
+  }
+
+
+  // SHOW PROFILE
+
+  document.getElementById("studentId").innerText =
+    student.nsp_id || "-";
+
+  document.getElementById("studentName").innerText =
+    student.student_name || "-";
+
+  document.getElementById("studentClass").innerText =
+    student.class || "-";
+
+  document.getElementById("schoolName").innerText =
+    student.school_name || "-";
+
+  document.getElementById("district").innerText =
+    student.district || "-";
+
+  document.getElementById("state").innerText =
+    student.state || "-";
+
+  document.getElementById("studentStatus").innerText =
+    student.student_status || "-";
+
+
+  status.style.display = "none";
+
+  document.getElementById("profileCard").style.display =
+    "block";
+
+  document.getElementById("feesCard").style.display =
+    "block";
+
+  document.getElementById("logoutButton").style.display =
+    "block";
+
+
+  // IMPORTANT:
+  // fees.student_id points to students.id
+  await loadFees(student.id);
+}
+
+
+// LOAD FEES
+async function loadFees(studentDatabaseId) {
+
+  const feeMessage =
+    document.getElementById("feeMessage");
+
+  const feesList =
+    document.getElementById("feesList");
+
+
+  const { data: fees, error } =
+    await supabaseClient
+      .from("fees")
+      .select("*")
+      .eq("student_id", studentDatabaseId)
+      .order("fee_year", { ascending: false })
+      .order("fee_month", { ascending: false });
+
+
+  if (error) {
+
+    feeMessage.style.color = "#c62828";
+
+    feeMessage.innerText =
+      "FEE ERROR: " +
+      error.message +
+      " | CODE: " +
+      error.code;
+
+    console.error(error);
+
+    return;
+  }
+
+
+  if (!fees || fees.length === 0) {
+
+    feeMessage.innerText =
+      "No fee records found.";
+
+    return;
+  }
+
+
+  feeMessage.style.display = "none";
+
+  feesList.innerHTML = "";
+
+
+  fees.forEach(function(fee) {
+
+    const item =
+      document.createElement("div");
+
+    item.className = "fee-item";
+
+
+    const amount =
+      Number(fee.amount || 0);
+
+    const paid =
+      Number(fee.amount_paid || 0);
+
+    const balance =
+      amount - paid;
+
+
+    const statusClass =
+      String(fee.status).toUpperCase() === "PAID"
+        ? "paid"
+        : "unpaid";
+
+
+    item.innerHTML = `
+      <p>
+        <strong>Month:</strong>
+        ${fee.fee_month || "-"} / ${fee.fee_year || "-"}
+      </p>
+
+      <p>
+        <strong>Total Fee:</strong>
+        ₹${amount.toLocaleString("en-IN")}
+      </p>
+
+      <p>
+        <strong>Amount Paid:</strong>
+        ₹${paid.toLocaleString("en-IN")}
+      </p>
+
+      <p>
+        <strong>Balance:</strong>
+        ₹${balance.toLocaleString("en-IN")}
+      </p>
+
+      <p>
+        <strong>Status:</strong>
+        <span class="${statusClass}">
+          ${fee.status || "-"}
+        </span>
+      </p>
+
+      <p>
+        <strong>Payment Date:</strong>
+        ${fee.payment_date || "-"}
+      </p>
+
+      <p>
+        <strong>Receipt:</strong>
+        ${fee.receipt_number || "-"}
+      </p>
+
+      <p>
+        <strong>Payment Mode:</strong>
+        ${fee.payment_mode || "-"}
+      </p>
+    `;
+
+
+    feesList.appendChild(item);
+
+  });
+}
+
+
+// LOGOUT
+document
+  .getElementById("logoutButton")
+  .addEventListener(
+    "click",
+    async function() {
+
+      await supabaseClient.auth.signOut();
+
+      window.location.href =
+        "login.html";
+
+    }
+  );
+
+
+loadStudent();
+
+</script>
+
+</body>
+</html>    </div>
 
     <div class="row">
       <span class="label">School:</span>
