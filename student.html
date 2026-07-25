@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Student Dashboard | NSP</title>
+
+  <title>Student Portal | NSP</title>
 
   <style>
     * {
@@ -27,6 +28,11 @@
 
     header h1 {
       margin: 0;
+      font-size: 27px;
+    }
+
+    header p {
+      margin: 8px 0 0;
     }
 
     .container {
@@ -57,8 +63,11 @@
     }
 
     #status {
-      text-align: center;
+      background: white;
       padding: 20px;
+      border-radius: 12px;
+      text-align: center;
+      margin-bottom: 20px;
     }
 
     .fee-item {
@@ -86,19 +95,32 @@
     #feeMessage {
       text-align: center;
       color: #666;
-      padding: 15px 0;
+      padding: 15px;
     }
 
-    button {
+    .back-button,
+    #logoutButton {
       width: 100%;
       padding: 14px;
       border: none;
       border-radius: 10px;
-      background: #f5ad00;
-      color: #07366d;
-      font-size: 17px;
+      font-size: 16px;
       font-weight: bold;
       cursor: pointer;
+      margin-top: 10px;
+    }
+
+    #logoutButton {
+      background: #f5ad00;
+      color: #07366d;
+    }
+
+    .back-button {
+      display: block;
+      background: #07366d;
+      color: white;
+      text-align: center;
+      text-decoration: none;
     }
   </style>
 </head>
@@ -110,196 +132,313 @@
   <p>Navodaya Success Point</p>
 </header>
 
+
 <div class="container">
 
-  <div id="status">Loading student details...</div>
+  <div id="status">
+    Loading student details...
+  </div>
 
-  <!-- STUDENT PROFILE -->
-  <div class="card" id="profileCard" style="display:none;">
+
+  <!-- =========================
+       STUDENT PROFILE
+       ========================= -->
+
+  <div
+    class="card"
+    id="profileCard"
+    style="display:none;"
+  >
+
     <h2>👤 Student Profile</h2>
 
     <div class="row">
       <span class="label">Student ID:</span>
-      <span id="studentId"></span>
+      <span id="studentId">-</span>
     </div>
 
     <div class="row">
       <span class="label">Name:</span>
-      <span id="studentName"></span>
+      <span id="studentName">-</span>
     </div>
 
     <div class="row">
       <span class="label">Class:</span>
-      <span id="studentClass"></span>
+      <span id="studentClass">-</span>
     </div>
 
     <div class="row">
       <span class="label">School:</span>
-      <span id="schoolName"></span>
+      <span id="schoolName">-</span>
     </div>
 
     <div class="row">
       <span class="label">District:</span>
-      <span id="district"></span>
+      <span id="district">-</span>
     </div>
 
     <div class="row">
       <span class="label">State:</span>
-      <span id="state"></span>
+      <span id="state">-</span>
     </div>
 
     <div class="row">
       <span class="label">Status:</span>
-      <span id="studentStatus"></span>
+      <span id="studentStatus">-</span>
     </div>
+
   </div>
 
-  <!-- FEES -->
-  <div class="card" id="feesCard" style="display:none;">
+
+  <!-- =========================
+       FEES
+       ========================= -->
+
+  <div
+    class="card"
+    id="feesCard"
+    style="display:none;"
+  >
+
     <h2>💰 My Fees</h2>
 
-    <div id="feeMessage">Loading fee details...</div>
+    <div id="feeMessage">
+      Loading fee details...
+    </div>
 
     <div id="feesList"></div>
+
   </div>
 
-  <button id="logoutButton" style="display:none;">
+
+  <a
+    href="index.html"
+    class="back-button"
+    id="backButton"
+    style="display:none;"
+  >
+    ← Back to Dashboard
+  </a>
+
+
+  <button
+    id="logoutButton"
+    style="display:none;"
+  >
     Logout
   </button>
 
 </div>
 
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+
 <script>
+
 const SUPABASE_URL =
   "https://eifjroamwsroaxrlupym.supabase.co";
 
 const SUPABASE_PUBLISHABLE_KEY =
   "sb_publishable_grY-Dece7_RS5CLwzAZZ_A_icnSUMIj";
 
-const supabaseClient = supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_PUBLISHABLE_KEY,
-  {
-    auth: {
-      persistSession: true,
-      autoRefreshToken: true,
-      detectSessionInUrl: true
+
+const supabaseClient =
+  supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_PUBLISHABLE_KEY,
+    {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: true
+      }
     }
-  }
-);
+  );
 
 
-// LOAD STUDENT
+
+/* ==================================
+   LOAD LOGGED-IN STUDENT
+   ================================== */
+
 async function loadStudent() {
 
-  const status = document.getElementById("status");
+  const status =
+    document.getElementById("status");
 
-  const {
-    data: { user },
-    error: userError
-  } = await supabaseClient.auth.getUser();
+  const profileCard =
+    document.getElementById("profileCard");
+
+  const feesCard =
+    document.getElementById("feesCard");
+
+  const logoutButton =
+    document.getElementById("logoutButton");
+
+  const backButton =
+    document.getElementById("backButton");
 
 
-  if (userError || !user) {
+  try {
 
-    status.innerText =
-      "SESSION ERROR: " +
-      (userError?.message || "No logged-in user found");
+    /* GET LOGGED IN USER */
 
-    return;
+    const {
+      data: { user },
+      error: userError
+    } =
+      await supabaseClient.auth.getUser();
+
+
+    if (userError || !user) {
+
+      status.innerText =
+        "Your login session was not found. Please login again.";
+
+      setTimeout(function() {
+        window.location.href = "login.html";
+      }, 1500);
+
+      return;
+    }
+
+
+
+    /* GET STUDENT DATABASE ROW */
+
+    const {
+      data: student,
+      error: studentError
+    } =
+      await supabaseClient
+        .from("students")
+        .select("*")
+        .eq("auth_user_id", user.id)
+        .single();
+
+
+    if (studentError) {
+
+      console.error(studentError);
+
+      status.innerText =
+        "Student data error: " +
+        studentError.message;
+
+      return;
+    }
+
+
+    if (!student) {
+
+      status.innerText =
+        "Student record not found.";
+
+      return;
+    }
+
+
+
+    /* ==========================
+       FILL PROFILE DATA
+       ========================== */
+
+    document.getElementById("studentId").innerText =
+      student.nsp_id || "-";
+
+    document.getElementById("studentName").innerText =
+      student.student_name || "-";
+
+    document.getElementById("studentClass").innerText =
+      student.class || "-";
+
+    document.getElementById("schoolName").innerText =
+      student.school_name || "-";
+
+    document.getElementById("district").innerText =
+      student.district || "-";
+
+    document.getElementById("state").innerText =
+      student.state || "-";
+
+    document.getElementById("studentStatus").innerText =
+      student.student_status || "-";
+
+
+
+    /* REMOVE LOADING */
+
+    status.style.display = "none";
+
+    logoutButton.style.display = "block";
+    backButton.style.display = "block";
+
+
+
+    /* ==================================
+       CHECK WHICH DASHBOARD CARD
+       WAS CLICKED
+       ================================== */
+
+    const pageSection =
+      window.location.hash;
+
+
+    /* MONTHLY FEES CLICKED */
+
+    if (pageSection === "#feesCard") {
+
+      profileCard.style.display = "none";
+
+      feesCard.style.display = "block";
+
+      await loadFees(student.id);
+
+      return;
+    }
+
+
+
+    /* MY PROFILE CLICKED */
+
+    if (pageSection === "#profileCard") {
+
+      profileCard.style.display = "block";
+
+      feesCard.style.display = "none";
+
+      return;
+    }
+
+
+
+    /* DIRECT student.html OPENED */
+
+    profileCard.style.display = "block";
+
+    feesCard.style.display = "none";
+
   }
 
-
-  const { data: student, error } =
-    await supabaseClient
-      .from("students")
-      .select("*")
-      .eq("auth_user_id", user.id)
-      .single();
-
-
-  if (error) {
-
-    status.innerText =
-      "DB ERROR: " +
-      error.message +
-      " | CODE: " +
-      error.code +
-      " | DETAILS: " +
-      (error.details || "-");
+  catch (error) {
 
     console.error(error);
 
-    return;
-  }
-
-
-  if (!student) {
-
     status.innerText =
-      "NO STUDENT ROW FOUND FOR USER: " +
-      user.id;
+      "Something went wrong: " +
+      error.message;
 
-    return;
   }
 
-
-  // SHOW PROFILE
-
-  document.getElementById("studentId").innerText =
-    student.nsp_id || "-";
-
-  document.getElementById("studentName").innerText =
-    student.student_name || "-";
-
-  document.getElementById("studentClass").innerText =
-    student.class || "-";
-
-  document.getElementById("schoolName").innerText =
-    student.school_name || "-";
-
-  document.getElementById("district").innerText =
-    student.district || "-";
-
-  document.getElementById("state").innerText =
-    student.state || "-";
-
-  document.getElementById("studentStatus").innerText =
-    student.student_status || "-";
-
-
-  status.style.display = "none";
-
-  document.getElementById("profileCard").style.display =
-    "block";
-
-  document.getElementById("feesCard").style.display =
-    "block";
-
-  document.getElementById("logoutButton").style.display =
-    "block";
-
-
-  // IMPORTANT:
-  // fees.student_id points to students.id
-  await loadFees(student.id);
-}
-// Show only the section requested from dashboard
-const section = window.location.hash;
-
-if (section === "#feesCard") {
-  document.getElementById("profileCard").style.display = "none";
-  document.getElementById("feesCard").style.display = "block";
 }
 
-if (section === "#profileCard") {
-  document.getElementById("profileCard").style.display = "block";
-  document.getElementById("feesCard").style.display = "none";
-}
 
-// LOAD FEES
+
+/* ==================================
+   LOAD STUDENT FEES
+   ================================== */
+
 async function loadFees(studentDatabaseId) {
 
   const feeMessage =
@@ -309,29 +448,49 @@ async function loadFees(studentDatabaseId) {
     document.getElementById("feesList");
 
 
-  const { data: fees, error } =
+  feeMessage.style.display = "block";
+  feeMessage.style.color = "#666";
+  feeMessage.innerText =
+    "Loading fee details...";
+
+  feesList.innerHTML = "";
+
+
+  const {
+    data: fees,
+    error
+  } =
     await supabaseClient
       .from("fees")
       .select("*")
-      .eq("student_id", studentDatabaseId)
-      .order("fee_year", { ascending: false })
-      .order("fee_month", { ascending: false });
+      .eq(
+        "student_id",
+        studentDatabaseId
+      )
+      .order(
+        "fee_year",
+        { ascending: false }
+      )
+      .order(
+        "fee_month",
+        { ascending: false }
+      );
 
 
   if (error) {
 
-    feeMessage.style.color = "#c62828";
+    console.error(error);
+
+    feeMessage.style.color =
+      "#c62828";
 
     feeMessage.innerText =
-      "FEE ERROR: " +
-      error.message +
-      " | CODE: " +
-      error.code;
-
-    console.error(error);
+      "Unable to load fees: " +
+      error.message;
 
     return;
   }
+
 
 
   if (!fees || fees.length === 0) {
@@ -343,9 +502,9 @@ async function loadFees(studentDatabaseId) {
   }
 
 
-  feeMessage.style.display = "none";
 
-  feesList.innerHTML = "";
+  feeMessage.style.display =
+    "none";
 
 
   fees.forEach(function(fee) {
@@ -353,29 +512,39 @@ async function loadFees(studentDatabaseId) {
     const item =
       document.createElement("div");
 
-    item.className = "fee-item";
+    item.className =
+      "fee-item";
 
 
     const amount =
       Number(fee.amount || 0);
 
-    const paid =
+    const amountPaid =
       Number(fee.amount_paid || 0);
 
     const balance =
-      amount - paid;
+      amount - amountPaid;
+
+
+    const feeStatus =
+      String(
+        fee.status || "UNPAID"
+      ).toUpperCase();
 
 
     const statusClass =
-      String(fee.status).toUpperCase() === "PAID"
+      feeStatus === "PAID"
         ? "paid"
         : "unpaid";
 
 
+
     item.innerHTML = `
+
       <p>
         <strong>Month:</strong>
-        ${fee.fee_month || "-"} / ${fee.fee_year || "-"}
+        ${fee.fee_month || "-"} /
+        ${fee.fee_year || "-"}
       </p>
 
       <p>
@@ -385,7 +554,7 @@ async function loadFees(studentDatabaseId) {
 
       <p>
         <strong>Amount Paid:</strong>
-        ₹${paid.toLocaleString("en-IN")}
+        ₹${amountPaid.toLocaleString("en-IN")}
       </p>
 
       <p>
@@ -395,8 +564,9 @@ async function loadFees(studentDatabaseId) {
 
       <p>
         <strong>Status:</strong>
+
         <span class="${statusClass}">
-          ${fee.status || "-"}
+          ${feeStatus}
         </span>
       </p>
 
@@ -414,16 +584,35 @@ async function loadFees(studentDatabaseId) {
         <strong>Payment Mode:</strong>
         ${fee.payment_mode || "-"}
       </p>
+
+      ${
+        fee.remarks
+        ?
+        `
+        <p>
+          <strong>Remarks:</strong>
+          ${fee.remarks}
+        </p>
+        `
+        :
+        ""
+      }
+
     `;
 
 
     feesList.appendChild(item);
 
   });
+
 }
 
 
-// LOGOUT
+
+/* ==================================
+   LOGOUT
+   ================================== */
+
 document
   .getElementById("logoutButton")
   .addEventListener(
@@ -439,9 +628,12 @@ document
   );
 
 
+
+/* START PAGE */
+
 loadStudent();
 
 </script>
 
 </body>
-</html>      
+</html>
