@@ -254,9 +254,17 @@ loginForm.addEventListener("submit", async function(event) {
     }
 
     message.style.color = "green";
-    message.textContent = "Login successful! Opening dashboard...";
+message.textContent = "Login successful! Opening dashboard...";
 
-    window.location.href = "./index.html";
+// Make sure session is stored before redirect
+await supabaseClient.auth.setSession({
+  access_token: data.session.access_token,
+  refresh_token: data.session.refresh_token
+});
+
+setTimeout(function () {
+  window.location.replace("./index.html");
+}, 800);
 
   } catch (error) {
     console.error(error);
