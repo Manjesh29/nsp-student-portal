@@ -1,1 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+  <title>Online Admission | NSP</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #f4f7fb;
+      color: #17233c;
+    }
+
+    header {
+      background: linear-gradient(135deg, #031d49, #063a78);
+      color: white;
+      text-align: center;
+      padding: 25px 15px;
+      border-bottom: 5px solid #f4ad16;
+    }
+
+    header .icon {
+      font-size: 50px;
+    }
+
+    header h1 {
+      color: #ffba18;
+      margin-top: 5px;
+    }
+
+    header p {
+      margin-top: 6px;
+    }
+
+    .container {
+      max-width: 750px;
+      margin: 30px auto;
+      padding: 0 18px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 18px;
+      padding: 25px;
+      box-shadow: 0 5px 20px rgba(0,0,0,.08);
+    }
+
+    .card h2 {
+      color: #062b5d;
+      text-align: center;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #666;
+      margin-bottom: 25px;
+      line-height: 1.5;
+    }
+
+    .section-title {
+      color: #062b5d;
+      font-size: 18px;
+      margin: 25px 0 15px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid #f4ad16;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+
+    .full {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      display: block;
+      color: #062b5d;
+      font-weight: bold;
+      margin-bottom: 7px;
+    }
+
+    input,
+    select {
+      width: 100%;
+      padding: 13px;
+      border: 1px solid #ccd3dc;
+      border-radius: 9px;
+      font-size: 15px;
+      outline: none;
+      background: white;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: #063a78;
+      box-shadow: 0 0 0 2px rgba(6,58,120,.08);
+    }
+
+    .required {
+      color: #c62828;
+    }
+
+    .note {
+      background: #fff7dc;
+      border-left: 4px solid #f4ad16;
+      padding: 13px;
+      border-radius: 7px;
+      margin-top: 22px;
+      color: #555;
+      line-height: 1.5;
+      font-size: 14px;
+    }
+
+    #submitButton {
+      width: 100%;
+      border: none;
+      background: #f4ad16;
+      color: #062b5d;
+      padding: 15px;
+      border-radius: 10px;
+      font-size: 17px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 25px;
+    }
+
+    #submitButton:disabled {
+      opacity: .6;
+      cursor: not-allowed;
+    }
+
+    #message {
+      margin-top: 20px;
+      padding: 14px;
+      border-radius: 9px;
+      text-align: center;
+      font-weight: bold;
+      display: none;
+      line-height: 1.5;
+    }
+
+    .success {
+      background: #e8f5e9;
+      color: #1b5e20;
+    }
+
+    .error {
+      background: #ffebee;
+      color: #b71c1c;
+    }
+
+    .back {
+      display: block;
+      text-align: center;
+      margin: 20px 0 35px;
+      text-decoration: none;
+      color: #062b5d;
+      font-weight: bold;
+    }
+
+    @media(max-width:600px) {
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .full {
+        grid-column: auto;
+      }
+
+      .card {
+        padding: 20px 16px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <div class="icon">🎓</div>
+  <h1>NSP Online Admission</h1>
+  <p>Navodaya Success Point</p>
+</header>
+
+<div class="container">
+
+  <div class="card">
+
+    <h2>📝 Student Admission Form</h2>
+
+    <p class="subtitle">
+      Fill in the student details carefully.
+      Fields marked * are required.
+    </p>
+
+    <form id="admissionForm">
+
+      <div class="section-title">
+        👤 Student Details
+      </div>
+
+      <div class="form-grid">
+
+        <div class="full">
+          <label>
+            Student Name <span class="required">*</span>
+          </label>
+
+          <input
+            type="text"
+            id="student_name"
+            placeholder="Enter student's full name"
+            required
+          >
+        </div>
+
+        <div>
+          <label>
+            Father's Name <span class="required">*</span>
+          </label>
+
+          <input
+            type="text"
+            id="father_name"
+            placeholder="Father's name"
+            required
+          >
+        </div>
+
+        <div>
+          <label>
+            Mother's Name <span class="required">*</span>
+          </label>
+
+          <input
+            type="text"
+            id="mother_name"
+            placeholder="Mother's name"
+            required
+          >
+        </div>
+
+        <div>
+          <label>
+            Date of Birth <span class="required">*</span>
+          </label>
+
+          <input
+            type="date"
+            id="date_of_birth"
+            required
+          >
+        </div>
+
+        <div>
+          <label>
+            Gender <span class="required">*</span>
+          </label>
+
+          <select id="gender" required>
+            <option value="">Select Gender</option>
+            <option value="MALE">Male</option>
+            <option value="FEMALE">Female</option>
+            <option value="OTHER">Other</option>
+          </select>
+        </div>
+
+        <div>
+          <label>Category</label>
+
+          <select id="category">
+            <option value="">Select Category</option>
+            <option value="GENERAL">General</option>
+            <option value="OBC">OBC</option>
+            <option value="SC">SC</option>
+            <option value="ST">ST</option>
+          </select>
+        </div>
+
+        <div>
+          <label>
+            Class <span class="required">*</span>
+          </label>
+
+          <select id="class_name" required>
+            <option value="">Select Class</option>
+            <option value="3">Class 3</option>
+            <option value="4">Class 4</option>
+            <option value="5">Class 5</option>
+            <option value="6">Class 6</option>
+            <option value="7">Class 7</option>
+            <option value="8">Class 8</option>
+            <option value="9">Class 9</option>
+            <option value="10">Class 10</option>
+          </select>
+        </div>
+
+      </div>
+
+
+      <div class="section-title">
+        📱 Contact Details
+      </div>
+
+      <div class="form-grid">
+
+        <div class="full">
+          <label>
+            Email Address <span class="required">*</span>
+          </label>
+
+          <input
+            type="email"
+            id="email"
+            placeholder="student@example.com"
+            autocomplete="email"
+            required
+          >
+        </div>
+
+        <div>
+          <label>
+            Mobile Number <span class="required">*</span>
+          </label>
+
+          <input
+            type="tel"
+            id="mobile_number"
+            placeholder="10 digit mobile number"
+            maxlength="10"
+            inputmode="numeric"
+            required
+          >
+        </div>
+
+        <div>
+          <label>Alternate Mobile</label>
+
+          <input
+            type="tel"
+            id="alternate_mobile"
+            placeholder="Optional"
+            maxlength="10"
+            inputmode="numeric"
+          >
+        </div>
+
+      </div>
+
+
+      <div class="section-title">
+        🏫 School Details
+      </div>
+
+      <div class="form-grid">
+
+        <div class="full">
+          <label>
+            School Name <span class="required">*</span>
+          </label>
+
+          <input
+            type="text"
+            id="school_name"
+            placeholder="Current school name"
+            required
+          >
+        </div>
+
+      </div>
+
+
+      <div class="section-title">
+        📍 Address
+      </div>
+
+      <div class="form-grid">
+
+        <div>
+          <label>
+            Village / City <span class="required">*</span>
+          </label>
+
+          <input
+            type="text"
+            id="village"
+            placeholder="Village or city"
+            required
+          >
+        </div>
+
+        <div>
+          <label>Post Office</label>
+
+          <input
+            type="text"
+            id="post_office"
+            placeholder="Post office"
+          >
+        </div>
+
+        <div>
+          <label>
+            District <span class="required">*</span>
+          </label>
+
+          <input
+            type="text"
+            id="district"
+            placeholder="District"
+            required
+          >
+        </div>
+
+        <div>
+          <label>
+            State <span class="required">*</span>
+          </label>
+
+          <input
+            type="text"
+            id="state"
+            placeholder="State"
+            required
+          >
+        </div>
+
+        <div class="full">
+          <label>
+            PIN Code <span class="required">*</span>
+          </label>
+
+          <input
+            type="text"
+            id="pincode"
+            placeholder="6 digit PIN code"
+            maxlength="6"
+            inputmode="numeric"
+            required
+          >
+        </div>
+
+      </div>
+
+
+      <div class="note">
+        📌 Submitting this form creates an admission application.
+        Student portal login access will be provided after the
+        application is approved.
+      </div>
+
+
+      <button
+        type="submit"
+        id="submitButton"
+      >
+        Submit Admission Application
+      </button>
+
+      <div id="message"></div>
+
+    </form>
+
+  </div>
+
+  <a href="index.html" class="back">
+    ← Back to Home
+  </a>
+
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+
+const SUPABASE_URL =
+  "https://eifjroamwsroaxrlupym.supabase.co";
+
+const SUPABASE_PUBLISHABLE_KEY =
+  "sb_publishable_grY-Dece7_RS5CLwzAZZ_A_icnSUMIj";
+
+const supabaseClient =
+  supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_PUBLISHABLE_KEY
+  );
+
+
+const admissionForm =
+  document.getElementById("admissionForm");
+
+const submitButton =
+  document.getElementById("submitButton");
+
+const message =
+  document.getElementById("message");
+
+
+function getValue(id) {
+  return document.getElementById(id).value.trim();
+}
+
+
+function generateApplicationNumber() {
+
+  const now = new Date();
+
+  const year =
+    now.getFullYear();
+
+  const random =
+    Math.floor(
+      100000 + Math.random() * 900000
+    );
+
+  return `NSP-ADM-${year}-${random}`;
+}
+
+
+admissionForm.addEventListener(
+  "submit",
+  async function(event) {
+
+    event.preventDefault();
+
+    message.style.display = "none";
+
+
+    const mobile =
+      getValue("mobile_number");
+
+    const alternateMobile =
+      getValue("alternate_mobile");
+
+    const pincode =
+      getValue("pincode");
+
+
+    if (!/^[0-9]{10}$/.test(mobile)) {
+
+      showError(
+        "Please enter a valid 10 digit mobile number."
+      );
+
+      return;
+    }
+
+
+    if (
+      alternateMobile &&
+      !/^[0-9]{10}$/.test(alternateMobile)
+    ) {
+
+      showError(
+        "Please enter a valid alternate mobile number."
+      );
+
+      return;
+    }
+
+
+    if (!/^[0-9]{6}$/.test(pincode)) {
+
+      showError(
+        "Please enter a valid 6 digit PIN code."
+      );
+
+      return;
+    }
+
+
+    submitButton.disabled = true;
+
+    submitButton.innerText =
+      "Submitting Application...";
+
+
+    const applicationNumber =
+      generateApplicationNumber();
+
+
+    const admissionData = {
+
+      application_number:
+        applicationNumber,
+
+      student_name:
+        getValue("student_name"),
+
+      father_name:
+        getValue("father_name"),
+
+      mother_name:
+        getValue("mother_name"),
+
+      date_of_birth:
+        getValue("date_of_birth"),
+
+      gender:
+        getValue("gender"),
+
+      category:
+        getValue("category") || null,
+
+      email:
+        getValue("email").toLowerCase(),
+
+      mobile_number:
+        mobile,
+
+      alternate_mobile:
+        alternateMobile || null,
+
+      class:
+        getValue("class_name"),
+
+      school_name:
+        getValue("school_name"),
+
+      village:
+        getValue("village"),
+
+      post_office:
+        getValue("post_office") || null,
+
+      district:
+        getValue("district"),
+
+      state:
+        getValue("state"),
+
+      pincode:
+        pincode,
+
+      photo_url:
+        null,
+
+      application_status:
+        "PENDING"
+
+    };
+
+
+    try {
+
+      const {
+        error
+      } =
+        await supabaseClient
+          .from("admissions")
+          .insert([admissionData]);
+
+
+      if (error) {
+        throw error;
+      }
+
+
+      message.className = "success";
+
+      message.style.display = "block";
+
+      message.innerHTML = `
+        ✅ Application submitted successfully!
+        <br><br>
+        Your Application Number:
+        <br>
+        <strong>${applicationNumber}</strong>
+        <br><br>
+        Please save this number for future reference.
+      `;
+
+
+      admissionForm.reset();
+
+
+      window.scrollTo({
+        top: document.body.scrollHeight,
+        behavior: "smooth"
+      });
+
+    }
+
+    catch (error) {
+
+      console.error(error);
+
+      showError(
+        "Application could not be submitted. " +
+        error.message
+      );
+
+    }
+
+    finally {
+
+      submitButton.disabled = false;
+
+      submitButton.innerText =
+        "Submit Admission Application";
+
+    }
+
+  }
+);
+
+
+function showError(text) {
+
+  message.className = "error";
+
+  message.style.display = "block";
+
+  message.innerText = text;
+
+}
+
+</script>
+
+</body>
+  </html>
