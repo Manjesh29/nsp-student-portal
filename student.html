@@ -172,11 +172,20 @@ async function loadStudent() {
       .eq("auth_user_id", user.id)
       .single();
 
-  if (error || !student) {
-    status.innerText = "Student profile not found.";
-    return;
-  }
+  if (error) {
+  status.innerText =
+    "DB ERROR: " + error.message +
+    " | CODE: " + error.code +
+    " | DETAILS: " + (error.details || "-");
+  console.error(error);
+  return;
+}
 
+if (!student) {
+  status.innerText =
+    "NO STUDENT ROW FOUND FOR USER: " + user.id;
+  return;
+}
   document.getElementById("studentId").innerText =
     student.nsp_id || "-";
 
